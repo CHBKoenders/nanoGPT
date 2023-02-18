@@ -2,4 +2,4 @@ out/*
 *.bin
 *.pyc
 wandb/
-.DS_Store/
+.DS_Store
