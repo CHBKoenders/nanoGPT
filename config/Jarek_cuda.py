@@ -5,6 +5,7 @@ wandb_log = True # feel free to turn on
 wandb_project = 'JarekGPT'
 
 device = "cuda"
+dtype = "float16"
 
 dataset = 'Jarek'
 init_from = 'gpt2-xl'
