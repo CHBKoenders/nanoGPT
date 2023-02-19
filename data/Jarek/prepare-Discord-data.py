@@ -60,36 +60,35 @@ for fnamne in os.listdir(dir):
 
         curr_msg = curr_msg + '\n' + msg if valid else msg
         curr_date = date if not valid else curr_date
-messages = np.array(messages)[1:]
-n = len(messages)
 
-# p = rng.permutation(n)
-p = np.arange(n)  # not permuting as message order is of importance
-# Maybe to reduce bias we could do mini-batch shuffeling or so?
-frac = 0.9
+messages = messages[1:]
 
-train_data = messages[p[:int(n * frac)]]
-valid_data = messages[p[int(n * frac):]]
-print(f"Splitting data into {len(train_data)} training, and {len(valid_data)} "
-      "validation messages")
-    
 # encode with tiktoken gpt2 bpe
 enc = tiktoken.get_encoding("gpt2")
-def encode_messages(messages):
+def encode_messages(messages, permutation):
     eot_token = enc.eot_token
     ids = [eot_token] # eot seperates messages, so indicates start as well
-    for msg in messages:
+    for idx in permutation:
+        msg = messages[idx]
         msg = "JarekGTP: "+msg # condition on answer-style
         curr_ids = enc.encode_ordinary(msg)
         curr_ids.append(eot_token)
         ids += curr_ids
     return ids
     
-train_ids = encode_messages(train_data)
-valid_ids = encode_messages(valid_data)
+n = len(messages)
+# p = rng.permutation(n)
+p = np.arange(n)  # not permuting as message order is of importance
+# Maybe to reduce bias we could do mini-batch shuffeling or so?
+frac = 0.9
+n_train = int(frac * n)
+n_valid = n - n_train
 
-print(f"train has {len(train_ids):,} tokens")
-print(f"val has {len(valid_ids):,} tokens")
+train_ids = encode_messages(messages, p[:n_train])
+valid_ids = encode_messages(messages, p[-n_valid:])
+
+print(f"train has {len(train_ids):,} tokens, from {n_train} messages")
+print(f"val has {len(valid_ids):,} tokens, from {n_valid} messages")
 
 # export to bin files
 train_ids = np.array(train_ids, dtype=np.uint16)

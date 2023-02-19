@@ -8,8 +8,8 @@ device = "cuda"
 dtype = "float16"
 
 dataset = 'Jarek'
-# init_from = 'gpt2-xl'
-init_from = 'resume'
+init_from = 'gpt2-xl'
+# init_from = 'resume'
 
 # only save checkpoints if the validation loss improves
 always_save_checkpoint = False
